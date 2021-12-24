@@ -1,0 +1,9 @@
+name: LucasLab
+author: Matt, Lucas
+main: com.lucaslab.LucasLabPlugin
+commands:
+  test:
+    permission: op
+    description: test the plugin works
+api-version: 1.18
+version: "1.0"
