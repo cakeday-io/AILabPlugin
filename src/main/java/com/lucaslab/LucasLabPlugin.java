@@ -2,14 +2,12 @@ package com.lucaslab;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Giant;
-import org.bukkit.entity.Mob;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -41,21 +39,24 @@ public class LucasLabPlugin extends JavaPlugin {
             Player thisPlayer = (Player) sender;
 
 
-            Location spot = thisPlayer.getWorld().getSpawnLocation().clone();
+            Location spot = thisPlayer.getLocation().clone();
+
             Location spawnSpot = spot.clone();
             spawnSpot.setX(spawnSpot.getX() + 20);
+            clearLocation(spawnSpot);
             Location goSpot = spot.clone();
-            spawnSpot.setX(spawnSpot.getX() + 100);
-
+            goSpot.setX(spawnSpot.getX() + 100);
+            clearLocation(goSpot);
             logSpot(spot);
 
 
             if (label.equalsIgnoreCase("lucaslab:test")) {
-                LOG.info("Creating Giant");
+                LOG.info("Creating Mushroom");
 
                 World world = spawnSpot.getWorld();
-                Mob waveMember = (Mob) world.spawnEntity(spawnSpot, EntityType.GIANT);
-                Bukkit.getMobGoals().addGoal(waveMember, 1, new BoxyMoveGoal<Giant>(this, waveMember, goSpot));
+                Mob newMob = (Mob) world.spawnEntity(spawnSpot, EntityType.MUSHROOM_COW);
+                LOG.info("Created a " + newMob.getType() + " with name " + newMob.getName());
+                Bukkit.getMobGoals().addGoal(newMob, 1, new BoxyMoveGoal<MushroomCow>(this, newMob, goSpot));
                 LOG.info("Lucas Lab Test Complete");
             }
         }
@@ -64,5 +65,12 @@ public class LucasLabPlugin extends JavaPlugin {
 
     private void logSpot(Location spot) {
         LOG.info("Spot at [" + spot.getX() + "," + spot.getY() + "," + spot.getZ() + "]");
+    }
+
+    private void clearLocation(Location clearSpot) {
+        Location clearLocation = clearSpot.clone();
+        clearLocation.setX(clearSpot.getX() - 5);
+        clearLocation.setZ(clearSpot.getZ() - 5);
+        StuffMaker.createFilledBox(Material.AIR, clearLocation, 10, 10, 10);
     }
 }

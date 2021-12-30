@@ -28,7 +28,7 @@ public class BoxyMoveGoal<T extends Mob> implements Goal {
 
     @Override
     public GoalKey getKey() {
-        return GoalKey.of(org.bukkit.entity.Mob.class, new NamespacedKey(plugin, "BoxyGoal"));
+        return GoalKey.of(org.bukkit.entity.Mob.class, new NamespacedKey(plugin, "BoxyMoveGoal"));
     }
 
     @Override

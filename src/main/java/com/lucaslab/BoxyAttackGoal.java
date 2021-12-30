@@ -28,7 +28,7 @@ public class BoxyAttackGoal<T extends Mob> implements Goal {
 
     @Override
     public GoalKey getKey() {
-        return GoalKey.of(Mob.class, new NamespacedKey(plugin, "BoxyGoal"));
+        return GoalKey.of(Mob.class, new NamespacedKey(plugin, "BoxyAttackGoal"));
     }
 
     @Override
