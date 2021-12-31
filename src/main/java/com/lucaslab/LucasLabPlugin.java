@@ -42,21 +42,21 @@ public class LucasLabPlugin extends JavaPlugin {
             Location spot = thisPlayer.getLocation().clone();
 
             Location spawnSpot = spot.clone();
-            spawnSpot.setX(spawnSpot.getX() + 20);
-            clearLocation(spawnSpot);
-            Location goSpot = spot.clone();
-            goSpot.setX(spawnSpot.getX() + 100);
-            clearLocation(goSpot);
-            logSpot(spot);
+//            spawnSpot.setX(spawnSpot.getX() + 0);
+//            clearLocation(spawnSpot);
+//            Location goSpot = spot.clone();
+//            goSpot.setX(spawnSpot.getX() + 100);
+//            clearLocation(goSpot);
+//            logSpot(spot);
 
 
             if (label.equalsIgnoreCase("lucaslab:test")) {
                 LOG.info("Creating Mushroom");
 
                 World world = spawnSpot.getWorld();
-                Mob newMob = (Mob) world.spawnEntity(spawnSpot, EntityType.MUSHROOM_COW);
+                Mob newMob = (Mob) world.spawnEntity(spawnSpot, EntityType.SILVERFISH);
                 LOG.info("Created a " + newMob.getType() + " with name " + newMob.getName());
-                Bukkit.getMobGoals().addGoal(newMob, 1, new BoxyMoveGoal<MushroomCow>(this, newMob, goSpot));
+                Bukkit.getMobGoals().addGoal(newMob, 1, new SilverFishGatherGoal<Silverfish>(this, newMob, spawnSpot));
                 LOG.info("Lucas Lab Test Complete");
             }
         }
