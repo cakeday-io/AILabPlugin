@@ -66,47 +66,65 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
             }
 
             if(onDirt(mob.getLocation().clone())) {
-                //Take the dirt
-                LOG.info("Getting Dirt");
-                getDirt();
-                this.target = null;
+                if(farEnough(mob.getLocation(), nest)) {
+                    //Take the dirt
+                    LOG.info("Getting Dirt");
+                    Location loc = mob.getLocation();
+                    getDirt(loc.clone());
 
+                    this.target = null;
+                }
             } else {
-                mob.getPathfinder().moveTo(target);
-                if(closeEnough(mob.getLocation(), target)) {
-                    LOG.info("Nothing here, need new spot");
-                    target = null;
+                if(onWater(mob.getLocation().clone())) {
+                    //give it more life
+                    LOG.info("Drinking Water");
+                    mob.setHealth(8);
+                } else {
+                    mob.getPathfinder().moveTo(target);
+                    if(closeEnough(mob.getLocation(), target)) {
+                        LOG.info("Nothing here, need new spot");
+                        target = null;
+                    }
                 }
             }
         }
         if(stuck(mob.getLocation())) {
             LOG.info("I'm stuck!");
-            mob.getLocation().setY(mob.getLocation().getY() + 10);
-        } else {
-            lastLocation = null;
-            stuckCounter =0;
+            climbOut();
         }
+        LOG.info("Health At " + mob.getHealth());
     }
-    private void getDirt() {
-        Location loc = mob.getLocation();
+    private void getDirt(Location loc) {
         loc.setY(loc.getY()-1);
         loc.getBlock().setType(Material.AIR);
         this.hasDirt = true;
     }
 
+
+
     private void dropDirt () {
         LOG.info("Dropping Dirt");
         Location mobLoc = mob.getLocation();
         Location loc = mobLoc.clone();
-        loc.setY(loc.getY()+1);
+        loc.setY(loc.getY()+2);
         loc.getBlock().setType(Material.DIRT);
         this.hasDirt = false;
+    }
 
+    private void climbOut() {
+        Location loc = mob.getLocation().toHighestLocation();
         //Move the bug
-        Random rand = new Random();
-        mobLoc.setX(mobLoc.getX() - JUMP_DIST/2 + rand.nextInt(JUMP_DIST));
-        mobLoc.setZ(mobLoc.getZ() - JUMP_DIST/2 + rand.nextInt(JUMP_DIST));
-        mobLoc.setY(mobLoc.getY() + JUMP_DIST/2);
+        boolean stillStuck = true;
+        while(stillStuck == true) {
+            Random rand = new Random();
+            loc.setX(loc.getX() - JUMP_DIST/2 + rand.nextInt(JUMP_DIST));
+            loc.setZ(loc.getZ() - JUMP_DIST/2 + rand.nextInt(JUMP_DIST));
+//            loc.setY(loc.getY() + JUMP_DIST/2);
+            if(loc.getBlock().getBlockData().getMaterial().equals(Material.AIR)) {
+                mob.teleport(loc);
+                stillStuck = false;
+            }
+        }
     }
 
     private boolean closeEnough(Location current, Location target) {
@@ -114,6 +132,14 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
         if((1/distance) > Math.random()) return true;
         return false;
     }
+
+    private boolean farEnough(Location current, Location target) {
+        double distance = current.distance(target);
+        if((1/distance) < Math.random()) return true;
+        return false;
+    }
+
+
 
     private boolean onDirt(Location ground) {
         //Check if it is standing on dirt
@@ -126,17 +152,42 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
         return false;
     }
 
+    private boolean onWater(Location ground) {
+        //Check if it is standing on dirt
+        ground.setY(ground.getY() - 1);
+        Block block = ground.getBlock();
+        LOG.info("On top of " + block.getBlockData().getMaterial().name());
+        if(block.getBlockData().getMaterial().equals(Material.WATER)) {
+            return true;
+        }
+        return false;
+    }
+
+//    private boolean dirtInFront(Location loc) {
+//        loc.getDirection().
+//        return false;
+//    }
+
     private boolean stuck(Location location) {
 
         if(lastLocation == null) {
-            lastLocation = location;
+            lastLocation = location.clone();
+//            LOG.info("Stuck : No last location =" + lastLocation.distance(location));
         } else {
+//            LOG.info("Stuck Distance =" + lastLocation.distance(location));
             if(lastLocation.distance(location) == 0) {
                 stuckCounter++;
+            } else {
+                //not stuck
+                lastLocation = location.clone();
+                stuckCounter = 0;
             }
         }
-        if(stuckCounter > 10) {
+        if(stuckCounter > 3) {
+            stuckCounter = 0;
             return true;
+//        } else {
+//            LOG.info("Stuck Count =" + stuckCounter);
         }
         return false;
     }
