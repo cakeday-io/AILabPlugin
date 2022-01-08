@@ -50,7 +50,7 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
     @Override
     public void tick() {
         if(hasDirt) {
-            mob.getPathfinder().moveTo(nest);
+ //           mob.getPathfinder().moveTo(nest);
             if(closeEnough(mob.getLocation(), nest)) {
                 dropDirt();
             }
@@ -65,36 +65,58 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
                 target.setZ(target.getZ() - WANDER_DIST/2 + rand.nextInt(WANDER_DIST));
             }
 
-            if(onDirt(mob.getLocation().clone())) {
-                if(farEnough(mob.getLocation(), nest)) {
-                    //Take the dirt
-                    LOG.info("Getting Dirt");
-                    Location loc = mob.getLocation();
-                    getDirt(loc.clone());
 
-                    this.target = null;
-                }
-            } else {
-                if(onWater(mob.getLocation().clone())) {
-                    //give it more life
-                    LOG.info("Drinking Water");
-                    mob.setHealth(8);
-                } else {
-                    mob.getPathfinder().moveTo(target);
-                    if(closeEnough(mob.getLocation(), target)) {
-                        LOG.info("Nothing here, need new spot");
-                        target = null;
-                    }
-                }
+            Block block = blockInFront(mob.getLocation());
+            if(block.getBlockData().getMaterial().equals(Material.DIRT) || block.getBlockData().getMaterial().equals(Material.GRASS_BLOCK) ) {
+                //Take the dirt
+                LOG.info("Getting Dirt");
+                block.setType(Material.AIR);
+                this.hasDirt = true;
+                this.target = null;
+//            } else {
+//                mob.getPathfinder().moveTo(target);
+//                if(closeEnough(mob.getLocation(), target)) {
+//                    LOG.info("Nothing here, need new spot");
+//                    target = null;
+//                }
             }
+
+
+//            if(onDirt(mob.getLocation().clone())) {
+//                if(farEnough(mob.getLocation(), nest)) {
+//                    //Take the dirt
+//                    LOG.info("Getting Dirt");
+//                    Location loc = mob.getLocation();
+//                    getDirt(loc.clone());
+//
+//                    this.target = null;
+//                }
+//            } else {
+//                if(onStone(mob.getLocation().clone())) {
+//                    if(dirtInFront(mob.getLocation())) {
+//                        LOG.info("Dirt in front");
+//                    }
+//                } else if(onWater(mob.getLocation().clone())) {
+//                    //give it more life
+//                    LOG.info("Drinking Water");
+//                    mob.setHealth(8);
+//                } else {
+//                    mob.getPathfinder().moveTo(target);
+//                    if(closeEnough(mob.getLocation(), target)) {
+//                        LOG.info("Nothing here, need new spot");
+//                        target = null;
+//                    }
+//                }
+//            }
         }
-        if(stuck(mob.getLocation())) {
-            LOG.info("I'm stuck!");
-            climbOut();
-        }
-        LOG.info("Health At " + mob.getHealth());
+        //This causes the mob to teleport and hurt itself
+//        if(stuck(mob.getLocation())) {
+//            LOG.info("I'm stuck!");
+//            climbOut();
+//        }
+       // LOG.info("Health At " + mob.getHealth());
     }
-    private void getDirt(Location loc) {
+    private void getDirtUnder(Location loc) {
         loc.setY(loc.getY()-1);
         loc.getBlock().setType(Material.AIR);
         this.hasDirt = true;
@@ -105,8 +127,14 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
     private void dropDirt () {
         LOG.info("Dropping Dirt");
         Location mobLoc = mob.getLocation();
-        Location loc = mobLoc.clone();
-        loc.setY(loc.getY()+2);
+        Location loc = mobLoc.toHighestLocation();
+        if(loc.getY() + 1 == mobLoc.getY()) {
+            LOG.info("On Top of Mob");
+            loc.setY(loc.getY() + 2);
+        } else {
+            loc.setY(loc.getY() + 1);
+        }
+
         loc.getBlock().setType(Material.DIRT);
         this.hasDirt = false;
     }
@@ -141,6 +169,17 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
 
 
 
+    private boolean onStone(Location ground) {
+        //Check if it is standing on dirt
+        ground.setY(ground.getY() - 1);
+        Block block = ground.getBlock();
+//        LOG.info("On top of " + block.getBlockData().getMaterial().name());
+        if(block.getBlockData().getMaterial().equals(Material.STONE) ) {
+            return true;
+        }
+        return false;
+    }
+
     private boolean onDirt(Location ground) {
         //Check if it is standing on dirt
         ground.setY(ground.getY() - 1);
@@ -156,17 +195,41 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
         //Check if it is standing on dirt
         ground.setY(ground.getY() - 1);
         Block block = ground.getBlock();
-        LOG.info("On top of " + block.getBlockData().getMaterial().name());
+//        LOG.info("On top of " + block.getBlockData().getMaterial().name());
         if(block.getBlockData().getMaterial().equals(Material.WATER)) {
             return true;
         }
         return false;
     }
 
-//    private boolean dirtInFront(Location loc) {
-//        loc.getDirection().
+    private Block blockInFront(Location loc) {
+        //North is toward -Z
+        //West is toward -X
+        //South is toward Z
+        //East is toward X
+
+//        for(int i)
+        BlockFacing facing = BlockFacing.yawToFace(loc.getYaw(), false);
+        LOG.info("Direction =" + facing);
+        Location locFront = loc.clone();
+        if(facing.equals(BlockFacing.NORTH)) {
+            locFront.setZ(loc.getZ() - 1);
+        } else if (facing.equals(BlockFacing.EAST)) {
+            locFront.setX(loc.getX() + 1 );
+        } else if (facing.equals(BlockFacing.SOUTH)) {
+            locFront.setZ(loc.getZ() + 1 );
+        } else if (facing.equals(BlockFacing.WEST)) {
+            locFront.setX(loc.getX() - 1 );
+        }
+
+        Block block = locFront.getBlock();
+        LOG.info("Block in front is a  =" + block.getBlockData().getMaterial());
+        return block;
+//        if(block.getBlockData().getMaterial().equals(Material.DIRT) || block.getBlockData().getMaterial().equals(Material.GRASS_BLOCK) ) {
+//            return true;
+//        }
 //        return false;
-//    }
+    }
 
     private boolean stuck(Location location) {
 

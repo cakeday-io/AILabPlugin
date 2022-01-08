@@ -51,11 +51,12 @@ public class LucasLabPlugin extends JavaPlugin {
 
 
             if (label.equalsIgnoreCase("lucaslab:test")) {
-                LOG.info("Creating Mushroom");
+                LOG.info("Creating Test Jan 8,2022 v3");
 
                 World world = spawnSpot.getWorld();
                 Mob newMob = (Mob) world.spawnEntity(spawnSpot, EntityType.SILVERFISH);
                 LOG.info("Created a " + newMob.getType() + " with name " + newMob.getName());
+                Bukkit.getMobGoals().removeAllGoals(newMob);
                 Bukkit.getMobGoals().addGoal(newMob, 1, new SilverFishGatherGoal<Silverfish>(this, newMob, spawnSpot));
                 LOG.info("Lucas Lab Test Complete");
             }
