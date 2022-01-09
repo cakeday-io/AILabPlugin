@@ -22,7 +22,7 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
     private Location target;
     private Location lastLocation;
     private int stuckCounter = 0;
-    public static final int WANDER_DIST = 20;
+    public static final int WANDER_DIST = 50;
     public static final int JUMP_DIST = 6;
 
     boolean hasDirt = false;
@@ -50,7 +50,7 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
     @Override
     public void tick() {
         if(hasDirt) {
- //           mob.getPathfinder().moveTo(nest);
+            mob.getPathfinder().moveTo(nest);
             if(closeEnough(mob.getLocation(), nest)) {
                 dropDirt();
             }
@@ -65,6 +65,32 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
                 target.setZ(target.getZ() - WANDER_DIST/2 + rand.nextInt(WANDER_DIST));
             }
 
+//            if(onDirt(mob.getLocation().clone())) {
+//                if(farEnough(mob.getLocation(), nest)) {
+//                    //Take the dirt
+//                    LOG.info("Getting Dirt");
+//                    Location loc = mob.getLocation();
+//                    getDirtUnder(loc.clone());
+//
+//                    this.target = null;
+//                }
+//            } else {
+////                if(onStone(mob.getLocation().clone())) {
+////                    if(dirtInFront(mob.getLocation())) {
+////                        LOG.info("Dirt in front");
+////                    }
+////                } else if(onWater(mob.getLocation().clone())) {
+////                    //give it more life
+////                    LOG.info("Drinking Water");
+////                    mob.setHealth(8);
+////                } else {
+//                    mob.getPathfinder().moveTo(target);
+//                    if(closeEnough(mob.getLocation(), target)) {
+//                        LOG.info("Nothing here, need new spot");
+//                        target = null;
+//                    }
+////                }
+//            }
 
             Block block = blockInFront(mob.getLocation());
             if(block.getBlockData().getMaterial().equals(Material.DIRT) || block.getBlockData().getMaterial().equals(Material.GRASS_BLOCK) ) {
@@ -72,48 +98,29 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
                 LOG.info("Getting Dirt");
                 block.setType(Material.AIR);
                 this.hasDirt = true;
-                this.target = null;
-//            } else {
-//                mob.getPathfinder().moveTo(target);
-//                if(closeEnough(mob.getLocation(), target)) {
-//                    LOG.info("Nothing here, need new spot");
-//                    target = null;
-//                }
+            } else if(onDirt(mob.getLocation().clone())) {
+                if(farEnough(mob.getLocation(), nest)) {
+                    //Take the dirt
+                    LOG.info("Getting Dirt");
+                    Location loc = mob.getLocation();
+                    getDirtUnder(loc.clone());
+
+                    this.target = null;
+                }
+            } else {
+                mob.getPathfinder().moveTo(target);
+                if(closeEnough(mob.getLocation(), target)) {
+                    LOG.info("Nothing here, need new spot");
+                    target = null;
+                }
             }
-
-
-//            if(onDirt(mob.getLocation().clone())) {
-//                if(farEnough(mob.getLocation(), nest)) {
-//                    //Take the dirt
-//                    LOG.info("Getting Dirt");
-//                    Location loc = mob.getLocation();
-//                    getDirt(loc.clone());
-//
-//                    this.target = null;
-//                }
-//            } else {
-//                if(onStone(mob.getLocation().clone())) {
-//                    if(dirtInFront(mob.getLocation())) {
-//                        LOG.info("Dirt in front");
-//                    }
-//                } else if(onWater(mob.getLocation().clone())) {
-//                    //give it more life
-//                    LOG.info("Drinking Water");
-//                    mob.setHealth(8);
-//                } else {
-//                    mob.getPathfinder().moveTo(target);
-//                    if(closeEnough(mob.getLocation(), target)) {
-//                        LOG.info("Nothing here, need new spot");
-//                        target = null;
-//                    }
-//                }
-//            }
         }
         //This causes the mob to teleport and hurt itself
-//        if(stuck(mob.getLocation())) {
-//            LOG.info("I'm stuck!");
-//            climbOut();
-//        }
+        if(stuck(mob.getLocation())) {
+            LOG.info("I'm stuck!");
+            //climbOut();
+            this.target = null;
+        }
        // LOG.info("Health At " + mob.getHealth());
     }
     private void getDirtUnder(Location loc) {
