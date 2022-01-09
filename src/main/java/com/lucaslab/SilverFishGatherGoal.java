@@ -22,8 +22,8 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
     private Location target;
     private Location lastLocation;
     private int stuckCounter = 0;
-    public static final int WANDER_DIST = 50;
-    public static final int JUMP_DIST = 6;
+    public static final int WANDER_DIST = 200;
+    public static final int JUMP_DIST = 2;
 
     boolean hasDirt = false;
 
@@ -116,11 +116,11 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
             }
         }
         //This causes the mob to teleport and hurt itself
-        if(stuck(mob.getLocation())) {
-            LOG.info("I'm stuck!");
-            //climbOut();
-            this.target = null;
-        }
+//        if(stuck(mob.getLocation())) {
+//            LOG.info("I'm stuck!");
+//            climbOut();
+//            this.target = null;
+//        }
        // LOG.info("Health At " + mob.getHealth());
     }
     private void getDirtUnder(Location loc) {
@@ -154,7 +154,7 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
             Random rand = new Random();
             loc.setX(loc.getX() - JUMP_DIST/2 + rand.nextInt(JUMP_DIST));
             loc.setZ(loc.getZ() - JUMP_DIST/2 + rand.nextInt(JUMP_DIST));
-//            loc.setY(loc.getY() + JUMP_DIST/2);
+            loc.setY(loc.getY() + JUMP_DIST/2);
             if(loc.getBlock().getBlockData().getMaterial().equals(Material.AIR)) {
                 mob.teleport(loc);
                 stillStuck = false;
@@ -164,7 +164,9 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
 
     private boolean closeEnough(Location current, Location target) {
         double distance = current.distance(target);
-        if((1/distance) > Math.random()) return true;
+        LOG.info("Close Enough Dist = " + distance);
+        //TODO Distance is based on Y which is making this weird when the bugs go down
+        if((1/distance) > (Math.random() * Math.random())) return true;
         return false;
     }
 
