@@ -68,13 +68,16 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
 
         Location checkLoc = myLoc.clone();
 
-
-        for(int x = 0; x < range; x++){
-            for(int z = 0; z < range; z++){
-                checkLoc.setX(checkLoc.getX() + x);
-                checkLoc.setZ(checkLoc.getZ() + z);
+        int search = range * 2;
+        for(int x = 0; x <= search; x++){
+            for(int z = 0; z <= search; z++){
+                checkLoc.setX(checkLoc.getX() + x - range);
+                checkLoc.setZ(checkLoc.getZ() + z - range);
+                checkLoc.setY(checkLoc.getY() + 1);
                 Block block = checkLoc.getBlock();
+                //LOG.info("checking block at " + x +","+z);
                 if(isFood(block)) {
+                    LOG.info("food found at " + x +","+z);
                     return checkLoc;
                 }
             }
@@ -84,11 +87,18 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
     }
 
     private boolean isFood(Block block){
+        LOG.info("Do I eat " + block.getBlockData().getMaterial() + "?");
         if(block.getBlockData().getMaterial().equals(Material.ACACIA_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.BIRCH_WOOD)
+                || block.getBlockData().getMaterial().equals(Material.SPRUCE_LOG)
+                || block.getBlockData().getMaterial().equals(Material.BEEF)
+                || block.getBlockData().getMaterial().equals(Material.DARK_OAK_LOG)
+                || block.getBlockData().getMaterial().equals(Material.BIRCH_LOG)
+                || block.getBlockData().getMaterial().equals(Material.OAK_LOG)
                 || block.getBlockData().getMaterial().equals(Material.DARK_OAK_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.OAK_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.CHEST))  {
+            LOG.info("Yummm" + block.getBlockData().getMaterial() + "!");
             return true;
         }
         return false;
