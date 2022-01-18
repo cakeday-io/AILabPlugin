@@ -50,7 +50,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
             mob.getPathfinder().moveTo(nest);
         } else {
             if(this.woodLocation == null) {
-                woodLocation = lookAroundYouForFood(mob.getLocation(), 2);
+                woodLocation = lookAroundYouForFood(mob.getLocation(), 1);
             }else {
                 mob.getPathfinder().moveTo(woodLocation);
             }
@@ -65,15 +65,15 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
      * @return returns null if no food is found
      */
     private Location lookAroundYouForFood(Location myLoc, int range) {
-
+        LOG.info("Looking around ["+myLoc.getX()+" , "+ myLoc.getY()+" , "+myLoc.getZ()+"]");
         Location checkLoc = myLoc.clone();
-
+        checkLoc.setY(checkLoc.getY() + 1);
         int search = range * 2;
         for(int x = 0; x <= search; x++){
+            checkLoc.setX(checkLoc.getX() + x - range);
             for(int z = 0; z <= search; z++){
-                checkLoc.setX(checkLoc.getX() + x - range);
                 checkLoc.setZ(checkLoc.getZ() + z - range);
-                checkLoc.setY(checkLoc.getY() + 1);
+                LOG.info("checking ["+x+" , "+z+"]");
                 Block block = checkLoc.getBlock();
                 //LOG.info("checking block at " + x +","+z);
                 if(isFood(block)) {
@@ -81,13 +81,14 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                     return checkLoc;
                 }
             }
+            checkLoc.setZ(myLoc.getZ());
         }
 
         return null;
     }
 
     private boolean isFood(Block block){
-        LOG.info("Do I eat " + block.getBlockData().getMaterial() + "?");
+        //LOG.info("Do I eat " + block.getBlockData().getMaterial() + "? at["+block.getX()+" , "+ block.getY()+" , "+block.getZ()+"]");
         if(block.getBlockData().getMaterial().equals(Material.ACACIA_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.BIRCH_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.SPRUCE_LOG)
