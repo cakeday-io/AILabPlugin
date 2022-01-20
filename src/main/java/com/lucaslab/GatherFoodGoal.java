@@ -64,7 +64,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
      *
      * @return returns null if no food is found
      */
-    static Location lookAroundYouForFood(Location myLoc, int range) {
+    public Location lookAroundYouForFood(Location myLoc, int range) {
         LOG.info("Looking around ["+myLoc.getX()+" , "+ myLoc.getY()+" , "+myLoc.getZ()+"]");
         Location checkLoc = myLoc.clone();
         checkLoc.setY(checkLoc.getY() + 1);
@@ -87,7 +87,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
         return null;
     }
 
-    static boolean isFood(Block block){
+    public boolean isFood(Block block){
         //LOG.info("Do I eat " + block.getBlockData().getMaterial() + "? at["+block.getX()+" , "+ block.getY()+" , "+block.getZ()+"]");
         if(block.getBlockData().getMaterial().equals(Material.ACACIA_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.BIRCH_WOOD)
