@@ -50,9 +50,14 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
             mob.getPathfinder().moveTo(nest);
         } else {
             if(this.woodLocation == null) {
-                woodLocation = lookAroundYouForFood(mob.getLocation(), 1);
+                woodLocation = lookAroundYouForFood(mob.getLocation(), 2);
             }else {
                 mob.getPathfinder().moveTo(woodLocation);
+                Block frontBlock = this.blockInFront(mob.getLocation());
+                if(isFood(frontBlock)){
+                    frontBlock.setType(Material.AIR);
+                    this.woodLocation = null;
+                }
             }
 
         }
@@ -67,13 +72,13 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
     public Location lookAroundYouForFood(Location myLoc, int range) {
         LOG.info("Looking around ["+myLoc.getX()+" , "+ myLoc.getY()+" , "+myLoc.getZ()+"]");
         Location checkLoc = myLoc.clone();
-        checkLoc.setY(checkLoc.getY() + 1);
+        //checkLoc.setY(checkLoc.getY() + 1);
         int search = range * 2;
         for(int x = 0; x <= search; x++){
-            checkLoc.setX(checkLoc.getX() + x - range);
+            checkLoc.setX(myLoc.getX() + x - range);
             for(int z = 0; z <= search; z++){
-                checkLoc.setZ(checkLoc.getZ() + z - range);
-                LOG.info("checking ["+x+" , "+z+"]");
+                checkLoc.setZ(myLoc.getZ() + z - range);
+                LOG.info("checking ["+x+" , "+z+"] world coordinate [" + checkLoc.getX() + " , " + checkLoc.getZ() + "] y" + checkLoc.getY());
                 Block block = checkLoc.getBlock();
                 //LOG.info("checking block at " + x +","+z);
                 if(isFood(block)) {
@@ -103,5 +108,34 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
             return true;
         }
         return false;
+    }
+
+    private Block blockInFront(Location loc) {
+        //North is toward -Z
+        //West is toward -X
+        //South is toward Z
+        //East is toward X
+
+//        for(int i)
+        BlockFacing facing = BlockFacing.yawToFace(loc.getYaw(), false);
+//        LOG.info("Direction =" + facing);
+        Location locFront = loc.clone();
+        if(facing.equals(BlockFacing.NORTH)) {
+            locFront.setZ(loc.getZ() - 1);
+        } else if (facing.equals(BlockFacing.EAST)) {
+            locFront.setX(loc.getX() + 1 );
+        } else if (facing.equals(BlockFacing.SOUTH)) {
+            locFront.setZ(loc.getZ() + 1 );
+        } else if (facing.equals(BlockFacing.WEST)) {
+            locFront.setX(loc.getX() - 1 );
+        }
+
+        Block block = locFront.getBlock();
+        // LOG.info("Block in front is a  =" + block.getBlockData().getMaterial());
+        return block;
+//        if(block.getBlockData().getMaterial().equals(Material.DIRT) || block.getBlockData().getMaterial().equals(Material.GRASS_BLOCK) ) {
+//            return true;
+//        }
+//        return false;
     }
 }
