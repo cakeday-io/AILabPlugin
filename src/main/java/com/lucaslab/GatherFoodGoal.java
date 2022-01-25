@@ -58,6 +58,12 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                     frontBlock.setType(Material.AIR);
                     this.woodLocation = null;
                 }
+                Location underBlock = mob.getLocation().clone();
+                underBlock.setY(underBlock.getY()-1);
+                if(isFood(underBlock.getBlock())){
+                    underBlock.getBlock().setType(Material.AIR);
+                    this.woodLocation = null;
+                }
             }
 
         }
@@ -72,23 +78,27 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
     public Location lookAroundYouForFood(Location myLoc, int range) {
         LOG.info("Looking around ["+myLoc.getX()+" , "+ myLoc.getY()+" , "+myLoc.getZ()+"]");
         Location checkLoc = myLoc.clone();
-        //checkLoc.setY(checkLoc.getY() + 1);
+        checkLoc.setY(checkLoc.getY() - 1);
         int search = range * 2;
-        for(int x = 0; x <= search; x++){
-            checkLoc.setX(myLoc.getX() + x - range);
-            for(int z = 0; z <= search; z++){
-                checkLoc.setZ(myLoc.getZ() + z - range);
-                LOG.info("checking ["+x+" , "+z+"] world coordinate [" + checkLoc.getX() + " , " + checkLoc.getZ() + "] y" + checkLoc.getY());
-                Block block = checkLoc.getBlock();
-                //LOG.info("checking block at " + x +","+z);
-                if(isFood(block)) {
-                    LOG.info("food found at " + x +","+z);
-                    return checkLoc;
-                }
-            }
-            checkLoc.setZ(myLoc.getZ());
-        }
+        for (int y = 0; y <= 2; y++) {
 
+            for (int x = 0; x <= search; x++) {
+                checkLoc.setX(myLoc.getX() + x - range);
+                for (int z = 0; z <= search; z++) {
+                    checkLoc.setZ(myLoc.getZ() + z - range);
+                    LOG.info("checking [" + x + " , " + z + "] world coordinate [" + checkLoc.getX() + " , " + checkLoc.getZ() + "] y" + checkLoc.getY());
+                    Block block = checkLoc.getBlock();
+                    //LOG.info("checking block at " + x +","+z);
+                    if (isFood(block)) {
+                        LOG.info("food found at " + x + "," + z);
+                        return checkLoc;
+                    }
+                }
+                checkLoc.setZ(myLoc.getZ());
+
+            }
+            checkLoc.setY(checkLoc.getY() + 1);
+        }
         return null;
     }
 
@@ -103,7 +113,11 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 || block.getBlockData().getMaterial().equals(Material.OAK_LOG)
                 || block.getBlockData().getMaterial().equals(Material.DARK_OAK_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.OAK_WOOD)
-                || block.getBlockData().getMaterial().equals(Material.CHEST))  {
+                || block.getBlockData().getMaterial().equals(Material.CHEST)
+                || block.getBlockData().getMaterial().equals(Material.DARK_OAK_LEAVES)
+                || block.getBlockData().getMaterial().equals(Material.JUNGLE_LEAVES)
+                || block.getBlockData().getMaterial().equals(Material.OAK_LEAVES)
+                || block.getBlockData().getMaterial().equals(Material.SPRUCE_LEAVES)){
             LOG.info("Yummm" + block.getBlockData().getMaterial() + "!");
             return true;
         }
