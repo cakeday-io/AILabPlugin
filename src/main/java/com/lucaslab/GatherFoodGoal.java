@@ -22,6 +22,9 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
     private Location woodLocation;
     private boolean hasWood = false;
 
+    private Location lastLocation;
+    private int stuckCounter = 0;
+
     public GatherFoodGoal(Plugin plugin, Mob mob, Location nest) {
         this.plugin = plugin;
         this.mob = mob;
@@ -50,7 +53,14 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
             mob.getPathfinder().moveTo(nest);
         } else {
             if(this.woodLocation == null) {
-                woodLocation = lookAroundYouForFood(mob.getLocation(), 2);
+                woodLocation = lookAroundYouForFood(mob.getLocation(), 1);
+                if(woodLocation == null){
+                    woodLocation = lookAroundYouForFood(mob.getLocation(), 2);
+                }
+                if(woodLocation == null){
+                    woodLocation = lookAroundYouForFood(mob.getLocation(), 3);
+                }
+
             }else {
                 mob.getPathfinder().moveTo(woodLocation);
                 Block frontBlock = this.blockInFront(mob.getLocation());
@@ -65,9 +75,11 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                     this.woodLocation = null;
                 }
             }
-
+            if(stuck(mob.getLocation())) {
+                LOG.info("I'm stuck!");
+                this.woodLocation = null;
+            }
         }
-
     }
 
     /**
@@ -80,13 +92,13 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
         Location checkLoc = myLoc.clone();
         checkLoc.setY(checkLoc.getY() - 1);
         int search = range * 2;
-        for (int y = 0; y <= 2; y++) {
+        for (int y = 0; y <= 1; y++) {
 
             for (int x = 0; x <= search; x++) {
                 checkLoc.setX(myLoc.getX() + x - range);
                 for (int z = 0; z <= search; z++) {
                     checkLoc.setZ(myLoc.getZ() + z - range);
-                    LOG.info("checking [" + x + " , " + z + "] world coordinate [" + checkLoc.getX() + " , " + checkLoc.getZ() + "] y" + checkLoc.getY());
+                   // LOG.info("checking [" + x + " , " + z + "] world coordinate [" + checkLoc.getX() + " , " + checkLoc.getZ() + "] y" + checkLoc.getY());
                     Block block = checkLoc.getBlock();
                     //LOG.info("checking block at " + x +","+z);
                     if (isFood(block)) {
@@ -113,11 +125,11 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 || block.getBlockData().getMaterial().equals(Material.OAK_LOG)
                 || block.getBlockData().getMaterial().equals(Material.DARK_OAK_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.OAK_WOOD)
-                || block.getBlockData().getMaterial().equals(Material.CHEST)
-                || block.getBlockData().getMaterial().equals(Material.DARK_OAK_LEAVES)
-                || block.getBlockData().getMaterial().equals(Material.JUNGLE_LEAVES)
-                || block.getBlockData().getMaterial().equals(Material.OAK_LEAVES)
-                || block.getBlockData().getMaterial().equals(Material.SPRUCE_LEAVES)){
+                || block.getBlockData().getMaterial().equals(Material.CHEST)){
+//                || block.getBlockData().getMaterial().equals(Material.DARK_OAK_LEAVES)
+//                || block.getBlockData().getMaterial().equals(Material.JUNGLE_LEAVES)
+//                || block.getBlockData().getMaterial().equals(Material.OAK_LEAVES)
+//                || block.getBlockData().getMaterial().equals(Material.SPRUCE_LEAVES)){
             LOG.info("Yummm" + block.getBlockData().getMaterial() + "!");
             return true;
         }
@@ -151,5 +163,28 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
 //            return true;
 //        }
 //        return false;
+    }
+    private boolean stuck(Location location) {
+
+        if(lastLocation == null) {
+            lastLocation = location.clone();
+//            LOG.info("Stuck : No last location =" + lastLocation.distance(location));
+        } else {
+//            LOG.info("Stuck Distance =" + lastLocation.distance(location));
+            if(lastLocation.distance(location) == 0) {
+                stuckCounter++;
+            } else {
+                //not stuck
+                lastLocation = location.clone();
+                stuckCounter = 0;
+            }
+        }
+        if(stuckCounter > 3) {
+            stuckCounter = 0;
+            return true;
+//        } else {
+//            LOG.info("Stuck Count =" + stuckCounter);
+        }
+        return false;
     }
 }
