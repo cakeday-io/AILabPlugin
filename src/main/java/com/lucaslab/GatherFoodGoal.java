@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 
 
 import java.util.EnumSet;
+import java.util.Random;
 import java.util.logging.Logger;
 
 public class GatherFoodGoal <T extends Mob> implements Goal {
@@ -20,6 +21,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
     private final Mob mob;
     private final Location nest;
     private Location woodLocation;
+    private Location wanderLocation;
     private boolean hasWood = false;
 
     private Location lastLocation;
@@ -60,6 +62,13 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 if(woodLocation == null){
                     woodLocation = lookAroundYouForFood(mob.getLocation(), 3);
                 }
+                if(woodLocation == null ){
+                    if(wanderLocation == null) {
+                        wanderLocation = newWanderSpot(mob.getLocation(),10);
+                    } else {
+                        mob.getPathfinder().moveTo(wanderLocation);
+                    }
+                }
 
             }else {
                 mob.getPathfinder().moveTo(woodLocation);
@@ -77,9 +86,28 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
             }
             if(stuck(mob.getLocation())) {
                 LOG.info("I'm stuck!");
+                //Just eat it
+                if(this.woodLocation != null){
+                    this.woodLocation.getBlock().setType(Material.AIR);
+                }
+
                 this.woodLocation = null;
+                this.wanderLocation = null;
             }
         }
+    }
+
+    /**
+     * Gives the bug a place to wander to
+     */
+    public Location newWanderSpot(Location start, int wanderDist) {
+        Location newLocation = start.clone();
+        Random rand = new Random();
+        newLocation.setX(newLocation.getX() - wanderDist/2 + rand.nextInt(wanderDist));
+        newLocation.setZ(newLocation.getZ() - wanderDist/2 + rand.nextInt(wanderDist));
+
+        newLocation = newLocation.toHighestLocation();
+        return newLocation;
     }
 
     /**
@@ -109,7 +137,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 checkLoc.setZ(myLoc.getZ());
 
             }
-            checkLoc.setY(checkLoc.getY() + 1);
+            checkLoc.setY(checkLoc.getY());
         }
         return null;
     }
@@ -125,11 +153,11 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 || block.getBlockData().getMaterial().equals(Material.OAK_LOG)
                 || block.getBlockData().getMaterial().equals(Material.DARK_OAK_WOOD)
                 || block.getBlockData().getMaterial().equals(Material.OAK_WOOD)
-                || block.getBlockData().getMaterial().equals(Material.CHEST)){
-//                || block.getBlockData().getMaterial().equals(Material.DARK_OAK_LEAVES)
-//                || block.getBlockData().getMaterial().equals(Material.JUNGLE_LEAVES)
-//                || block.getBlockData().getMaterial().equals(Material.OAK_LEAVES)
-//                || block.getBlockData().getMaterial().equals(Material.SPRUCE_LEAVES)){
+                || block.getBlockData().getMaterial().equals(Material.CHEST)
+                || block.getBlockData().getMaterial().equals(Material.DARK_OAK_LEAVES)
+                || block.getBlockData().getMaterial().equals(Material.JUNGLE_LEAVES)
+                || block.getBlockData().getMaterial().equals(Material.OAK_LEAVES)
+                || block.getBlockData().getMaterial().equals(Material.SPRUCE_LEAVES)){
             LOG.info("Yummm" + block.getBlockData().getMaterial() + "!");
             return true;
         }
