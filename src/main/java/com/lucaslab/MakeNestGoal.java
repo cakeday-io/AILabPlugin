@@ -14,8 +14,8 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.logging.Logger;
 
-public class SilverFishGatherGoal<T extends Mob> implements Goal {
-    public static final Logger LOG = Logger.getLogger("SilverFishGatherGoal");
+public class MakeNestGoal<T extends Mob> implements Goal {
+    public static final Logger LOG = Logger.getLogger("MakeNestGoal");
     private final Plugin plugin;
     private final Mob mob;
     private final Location nest;
@@ -27,7 +27,7 @@ public class SilverFishGatherGoal<T extends Mob> implements Goal {
 
     boolean hasDirt = false;
 
-    public SilverFishGatherGoal(Plugin plugin, Mob mob, Location nest) {
+    public MakeNestGoal(Plugin plugin, Mob mob, Location nest) {
         this.plugin =plugin;
         this.mob=mob;
         this.nest=nest;
