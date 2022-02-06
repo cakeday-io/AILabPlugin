@@ -85,7 +85,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 }
             }
             if(stuck(mob.getLocation())) {
-                LOG.info("I'm stuck!");
+//                LOG.info("I'm stuck!");
                 //Just eat it
                 if(this.woodLocation != null){
                     this.woodLocation.getBlock().setType(Material.AIR);
@@ -116,7 +116,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
      * @return returns null if no food is found
      */
     public Location lookAroundYouForFood(Location myLoc, int range) {
-        LOG.info("Looking around ["+myLoc.getX()+" , "+ myLoc.getY()+" , "+myLoc.getZ()+"]");
+//        LOG.info("Looking around ["+myLoc.getX()+" , "+ myLoc.getY()+" , "+myLoc.getZ()+"]");
         Location checkLoc = myLoc.clone();
         checkLoc.setY(checkLoc.getY() - 1);
         int search = range * 2;
