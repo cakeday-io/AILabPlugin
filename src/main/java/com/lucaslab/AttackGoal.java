@@ -8,12 +8,11 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class AttackGoal<T extends Mob> implements Goal {
@@ -49,13 +48,22 @@ public class AttackGoal<T extends Mob> implements Goal {
     public void tick() {
 
         Location myLoc = this.mob.getLocation();
-        List<Entity> entities = this.mob.getNearbyEntities(myLoc.getX(), myLoc.getY(), myLoc.getZ());
+        Collection<Entity> entities = myLoc.getNearbyEntities(5, 3, 5);
         if (entities.size() > 0) {
-            Entity badGuy = entities.get(0);
-            this.mob.attack(badGuy);
-            LOG.info("Attacking bad guy" + "!");
-        }
+            Iterator<Entity> iter = entities.iterator();
 
+
+            while (iter.hasNext()) {
+                Entity badGuy = iter.next();
+                EntityType type = badGuy.getType();
+                LOG.info("found type " + type);
+                if(!type.equals(EntityType.SILVERFISH)) {
+                    mob.getPathfinder().moveTo(badGuy.getLocation());
+                    this.mob.attack(badGuy);
+                    LOG.info("Attacking bad guy" + badGuy.getType().name());
+                }
+            }
+        }
     }
 
 
