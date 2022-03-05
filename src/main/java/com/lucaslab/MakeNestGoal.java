@@ -57,7 +57,7 @@ public class MakeNestGoal<T extends Mob> implements Goal {
         } else {
             //Check for a target location
             if(target == null) {
-                LOG.info("Picking new target");
+                //LOG.info("Picking new target");
                 //Pick a random location to go to
                 Random rand = new Random();
                 target = nest.clone();
@@ -69,13 +69,13 @@ public class MakeNestGoal<T extends Mob> implements Goal {
             if(block.getBlockData().getMaterial().equals(Material.DIRT)
                     || block.getBlockData().getMaterial().equals(Material.GRASS_BLOCK) ) {
                 //Take the dirt
-                LOG.info("Getting Dirt");
+                //LOG.info("Getting Dirt");
                 block.setType(Material.AIR);
                 this.hasDirt = true;
             } else if(onDirt(mob.getLocation().clone())) {
                 if(farEnough(mob.getLocation(), nest)) {
                     //Take the dirt
-                    LOG.info("Getting Dirt");
+                   // LOG.info("Getting Dirt");
                     Location loc = mob.getLocation();
                     getDirtUnder(loc.clone());
 
@@ -84,7 +84,7 @@ public class MakeNestGoal<T extends Mob> implements Goal {
             } else {
                 mob.getPathfinder().moveTo(target);
                 if(closeEnough(mob.getLocation(), target)) {
-                    LOG.info("Nothing here, need new spot");
+          //          LOG.info("Nothing here, need new spot");
                     target = null;
                 }
             }
@@ -92,7 +92,7 @@ public class MakeNestGoal<T extends Mob> implements Goal {
 
 
         if(stuck(mob.getLocation())) {
-            LOG.info("I'm stuck!");
+          //  LOG.info("I'm stuck!");
                 breakThrough();
 //            climbOut();
 //            this.target = null;
@@ -108,11 +108,11 @@ public class MakeNestGoal<T extends Mob> implements Goal {
 
 
     private void dropDirt () {
-        LOG.info("Dropping Dirt");
+      //  LOG.info("Dropping Dirt");
         Location mobLoc = mob.getLocation();
         Location loc = mobLoc.toHighestLocation();
         if(loc.getY() + 1 == mobLoc.getY()) {
-            LOG.info("On Top of Mob");
+          //  LOG.info("On Top of Mob");
             loc.setY(loc.getY() + 2);
         } else {
             loc.setY(loc.getY() + 1);
@@ -154,7 +154,7 @@ public class MakeNestGoal<T extends Mob> implements Goal {
 
     private boolean closeEnough(Location current, Location target) {
         double distance = current.distance(target);
-        LOG.info("Close Enough Dist = " + distance);
+      //  LOG.info("Close Enough Dist = " + distance);
         //TODO Distance is based on Y which is making this weird when the bugs go down
         if((1/distance) > (Math.random() * Math.random())) return true;
         return false;
@@ -162,7 +162,7 @@ public class MakeNestGoal<T extends Mob> implements Goal {
 
     private boolean farEnough(Location current, Location target) {
         double distance = current.distance(target);
-        LOG.info("distance="+distance);
+       // LOG.info("distance="+distance);
         if(distance==0 || (1/distance) < Math.random()) return true;
         return false;
     }
@@ -184,7 +184,7 @@ public class MakeNestGoal<T extends Mob> implements Goal {
         //Check if it is standing on dirt
         ground.setY(ground.getY() - 1);
         Block block = ground.getBlock();
-        LOG.info("On top of " + block.getBlockData().getMaterial().name());
+       // LOG.info("On top of " + block.getBlockData().getMaterial().name());
         if(block.getBlockData().getMaterial().equals(Material.DIRT)
                 || block.getBlockData().getMaterial().equals(Material.GRASS_BLOCK) ) {
             return true;

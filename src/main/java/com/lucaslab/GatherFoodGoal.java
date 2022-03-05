@@ -36,7 +36,8 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
 
     @Override
     public boolean shouldActivate() {
-        return true;
+        if(this.mob.getHealth() < 3) return true;
+        return false;
     }
 
     @Override
@@ -76,12 +77,16 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 if(isFood(frontBlock)){
                     frontBlock.setType(Material.AIR);
                     this.woodLocation = null;
+                    this.mob.setHealth(this.mob.getHealth()+1);
+                    LOG.info("eating 1");
                 }
                 Location underBlock = mob.getLocation().clone();
                 underBlock.setY(underBlock.getY()-1);
                 if(isFood(underBlock.getBlock())){
                     underBlock.getBlock().setType(Material.AIR);
                     this.woodLocation = null;
+                    this.mob.setHealth(this.mob.getHealth()+1);
+                    LOG.info("eating 2");
                 }
             }
             if(stuck(mob.getLocation())) {
@@ -89,6 +94,8 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 //Just eat it
                 if(this.woodLocation != null){
                     this.woodLocation.getBlock().setType(Material.AIR);
+                    this.mob.setHealth(this.mob.getHealth()+1);
+                    LOG.info("eating 3");
                 }
 
                 this.woodLocation = null;
@@ -130,7 +137,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                     Block block = checkLoc.getBlock();
                     //LOG.info("checking block at " + x +","+z);
                     if (isFood(block)) {
-                        LOG.info("food found at " + x + "," + z);
+                        //LOG.info("food found at " + x + "," + z);
                         return checkLoc;
                     }
                 }
@@ -158,7 +165,7 @@ public class GatherFoodGoal <T extends Mob> implements Goal {
                 || block.getBlockData().getMaterial().equals(Material.JUNGLE_LEAVES)
                 || block.getBlockData().getMaterial().equals(Material.OAK_LEAVES)
                 || block.getBlockData().getMaterial().equals(Material.SPRUCE_LEAVES)){
-            LOG.info("Yummm" + block.getBlockData().getMaterial() + "!");
+            // LOG.info("Yummm" + block.getBlockData().getMaterial() + "!");
             return true;
         }
         return false;
