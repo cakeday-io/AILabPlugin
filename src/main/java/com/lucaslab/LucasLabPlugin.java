@@ -1,9 +1,6 @@
 package com.lucaslab;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -13,10 +10,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+
 import java.util.logging.Logger;
 
 public class LucasLabPlugin extends JavaPlugin {
     public static final Logger LOG = Logger.getLogger("LucasLabPlugin");
+
+    private int taskID = 0;
 
     @Override
     public void onDisable() {
@@ -62,6 +62,35 @@ public class LucasLabPlugin extends JavaPlugin {
                 Bukkit.getMobGoals().addGoal(newMob, 2, new GatherFoodGoal<Silverfish>(this, newMob, spawnSpot));
                 Bukkit.getMobGoals().addGoal(newMob, 3, new MakeNestGoal<Silverfish>(this, newMob, spawnSpot));
                 LOG.info("Lucas Lab Test Complete");
+            }
+            if (label.equalsIgnoreCase("lucaslab:arrow2")) {
+                Arrow arrow = thisPlayer.launchProjectile(Arrow.class);
+                arrow.setGravity(false);
+                arrow.addPassenger(thisPlayer);
+                arrow.setVelocity(arrow.getVelocity().multiply(1.5));
+                arrow.setKnockbackStrength(10);
+                //arrow.setBounce(true);
+            }
+            if (label.equalsIgnoreCase("lucaslab:arrow")) {
+//                for(int i = 0; i <= 100d ; i++) {
+                    this.taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                        @Override
+                        public void run() {
+                            Arrow arrow = thisPlayer.launchProjectile(Arrow.class);
+                            Location loc = arrow.getLocation();
+
+                            arrow.getWorld().playEffect(loc, Effect.SMOKE, 10);
+                        }
+                    }, 0L, 1L); //20 Tick (1 Second) delay before run() is called
+
+///                   arrow.getMetadata();
+///                    Arrow arrow = thisPlayer.getWorld().spawnArrow(thisPlayer.getLocation(),thisPlayer.getLocation().getDirection(),100, 0);
+
+           //     }
+            }
+            if (label.equalsIgnoreCase("lucaslab:off_arrow")) {
+                Bukkit.getServer().getScheduler().cancelTask(taskID);
+
             }
         }
         return false;
