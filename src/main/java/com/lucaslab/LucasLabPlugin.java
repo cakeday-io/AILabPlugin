@@ -1,5 +1,9 @@
 package com.lucaslab;
 
+import com.ticxo.modelengine.ModelEngine;
+import com.ticxo.modelengine.api.model.ActiveModel;
+import com.ticxo.modelengine.api.model.ModeledEntity;
+
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
