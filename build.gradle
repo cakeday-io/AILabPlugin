@@ -14,11 +14,17 @@ repositories {
     maven { url = 'https://papermc.io/repo/repository/maven-releases/'}
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url = 'https://oss.sonatype.org/content/repositories/central' }
+    maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
 }
 
 dependencies {
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    //Used to add all jars in the libs folder to the compile https://appmediation.com/how-to-add-local-libraries-to-gradle/
+    compileOnly fileTree(include: ['*.jar'], dir: 'libs')
+
+    //implementation 'com.ticxo.modelengine:api:R2.4.2'
+    implementation 'com.ticxo.modelengine:plugin_v18:plugin_v18'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 
@@ -31,7 +37,7 @@ dependencies {
     implementation 'org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT'
     implementation 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
 
-    implementation 'com.destroystokyo.paper:paper-api:1.16.3-R0.1-SNAPSHOT'
+    implementation 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     //compileOnly 'com.destroystokyo.paper:paper-api:1.16.+'
 
 
