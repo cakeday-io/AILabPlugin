@@ -1,5 +1,11 @@
 package com.lucaslab;
 
+import com.ticxo.modelengine.ModelEngine;
+import com.ticxo.modelengine.api.ModelEngineAPI;
+import com.ticxo.modelengine.api.generator.blueprint.BlueprintBone;
+import com.ticxo.modelengine.api.generator.blueprint.ModelBlueprint;
+import com.ticxo.modelengine.api.model.ActiveModel;
+import com.ticxo.modelengine.api.model.ModeledEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,6 +19,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class LucasLabPlugin extends JavaPlugin {
@@ -55,7 +64,31 @@ public class LucasLabPlugin extends JavaPlugin {
 
                 World world = spawnSpot.getWorld();
 
+                //This code loads the blueprint and tells you all the bones
+//                ModelBlueprint blueprint = ModelEngine.getModelBlueprint("termite");
+//
+//                //ModelEngineAPI.getModelManager().getModelRegistry()
+//                if(blueprint != null) {
+//                    Map<String, BlueprintBone> bones = blueprint.getBones();
+//                    Iterator iter = bones.keySet().iterator();
+//                    while(iter.hasNext()) {
+//                        Object key = iter.next();
+//                        Object value = bones.get(key);
+//                        LOG.info("Got Bone Key[" + key + "] Value [" + value.toString() + "]");
+//                    }
+//                }
+
+                ActiveModel activeModel = ModelEngine.createActiveModel("termite");
+                if(activeModel != null) {
+                    LOG.info("Loaded active model [" + activeModel.getModelId() + "]");
+                } else {
+                    LOG.info("Model was null, no termite.bbmodel file in the /blueprints folder");
+                }
+
                 Mob newMob = (Mob) world.spawnEntity(spawnSpot, EntityType.SILVERFISH);
+                ModeledEntity modeledEntity = ModelEngine.createModeledEntity(newMob);
+                modeledEntity.addActiveModel(activeModel);
+
                 LOG.info("Created a " + newMob.getType() + " with name " + newMob.getName());
                 Bukkit.getMobGoals().removeAllGoals(newMob);
                 Bukkit.getMobGoals().addGoal(newMob, 1, new AttackGoal<Silverfish>(this, newMob, spawnSpot));
