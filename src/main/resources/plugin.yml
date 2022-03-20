@@ -5,5 +5,15 @@ commands:
   test:
     permission: op
     description: test the plugin works
+  arrow:
+    permission: op
+    description: fires arrow
+  off_arrow:
+    permission: op
+    description: stops firing arrows!
+  arrow2:
+    permission: op
+    description: Flying arrow test
+
 api-version: 1.18
 version: "1.0"

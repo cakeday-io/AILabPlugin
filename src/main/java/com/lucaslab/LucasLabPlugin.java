@@ -1,31 +1,35 @@
 package com.lucaslab;
 
 import com.ticxo.modelengine.ModelEngine;
-import com.ticxo.modelengine.api.ModelEngineAPI;
-import com.ticxo.modelengine.api.generator.blueprint.BlueprintBone;
-import com.ticxo.modelengine.api.generator.blueprint.ModelBlueprint;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.ModeledEntity;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.LazyMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.logging.Logger;
 
-public class LucasLabPlugin extends JavaPlugin {
+public class LucasLabPlugin extends JavaPlugin implements Listener {
     public static final Logger LOG = Logger.getLogger("LucasLabPlugin");
+
+    private int taskID = 0;
 
     @Override
     public void onDisable() {
@@ -38,8 +42,18 @@ public class LucasLabPlugin extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
 
         //Do all setup in here
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
+    @EventHandler
+    public void onHit(ProjectileHitEvent event) {
+        LOG.info("Projectile hit: " + event.getEventName());
+        if (event.getEntity() instanceof Arrow) {
+            if (event.getEntity().getMetadata("lucasarrow").size() != 0)  {
+                event.getEntity().getWorld().createExplosion(event.getEntity(), 10,true);
+            }
 
+        }
+    }
     public boolean onCommand(CommandSender sender,
                              Command command, String label, String[] arguments) {
 
@@ -95,6 +109,49 @@ public class LucasLabPlugin extends JavaPlugin {
                 Bukkit.getMobGoals().addGoal(newMob, 2, new GatherFoodGoal<Silverfish>(this, newMob, spawnSpot));
                 Bukkit.getMobGoals().addGoal(newMob, 3, new MakeNestGoal<Silverfish>(this, newMob, spawnSpot));
                 LOG.info("Lucas Lab Test Complete");
+            }
+            if (label.equalsIgnoreCase("lucaslab:arrow2")) {
+                Arrow arrow = thisPlayer.launchProjectile(Arrow.class);
+                arrow.setGravity(false);
+                //arrow.addPassenger(thisPlayer);
+                arrow.setVelocity(arrow.getVelocity().multiply(1.5));
+                arrow.setKnockbackStrength(10);
+                //arrow.setBounce(true);
+                arrow.setDamage(100);
+                arrow.setCustomName("apple pants");
+                arrow.setFallDistance(100);
+                arrow.addCustomEffect(PotionEffectType.BLINDNESS.createEffect(15,1) , true);
+                arrow.addCustomEffect(PotionEffectType.INCREASE_DAMAGE.createEffect(20,1) , true);
+                arrow.addCustomEffect(PotionEffectType.HARM.createEffect(10,1) , true);
+                arrow.addCustomEffect(PotionEffectType.BAD_OMEN.createEffect(1000000,1) , true);
+                arrow.addCustomEffect(PotionEffectType.LEVITATION.createEffect(100,1) , true);
+                arrow.addCustomEffect(PotionEffectType.UNLUCK.createEffect(50,1) , true);
+                
+
+                MetadataValue metadataValue = new FixedMetadataValue(this , "lucasarrow");
+                arrow.setMetadata("lucasarrow", metadataValue);
+
+            }
+            if (label.equalsIgnoreCase("lucaslab:arrow")) {
+//                for(int i = 0; i <= 100d ; i++) {
+                    this.taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                        @Override
+                        public void run() {
+                            Arrow arrow = thisPlayer.launchProjectile(Arrow.class);
+                            Location loc = arrow.getLocation();
+
+                            arrow.getWorld().playEffect(loc, Effect.SMOKE, 10);
+                        }
+                    }, 0L, 1L); //20 Tick (1 Second) delay before run() is called
+
+///                   arrow.getMetadata();
+///                    Arrow arrow = thisPlayer.getWorld().spawnArrow(thisPlayer.getLocation(),thisPlayer.getLocation().getDirection(),100, 0);
+
+           //     }
+            }
+            if (label.equalsIgnoreCase("lucaslab:off_arrow")) {
+                Bukkit.getServer().getScheduler().cancelTask(taskID);
+
             }
         }
         return false;
