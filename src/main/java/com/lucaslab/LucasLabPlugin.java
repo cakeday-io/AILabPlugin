@@ -11,8 +11,10 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.LazyMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -20,16 +22,20 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class LucasLabPlugin extends JavaPlugin implements Listener {
     public static final Logger LOG = Logger.getLogger("LucasLabPlugin");
 
     private int taskID = 0;
+
+    public static ArrayList<Projectile> arrows = new ArrayList<>();
 
     @Override
     public void onDisable() {
@@ -43,11 +49,52 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
 
         //Do all setup in here
         Bukkit.getPluginManager().registerEvents(this, this);
+        arrowTrace();
     }
+    public void arrowTrace() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
+
+            @Override
+            public void run() {
+                for(Projectile arrow : arrows){
+                    Location loc = arrow.getLocation();
+                    arrow.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 0);
+                }
+            }
+
+        }, 0, 1);
+    }
+
+    @EventHandler
+    public void click(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        if (p.getInventory().getItemInMainHand().getType() == Material.NETHERITE_SWORD) {
+            if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+                p.sendMessage("You right-clicked!");
+                Vector v = p.getLocation().getDirection().multiply(2D);
+                Arrow a = (Arrow) p.getWorld().spawnEntity(p.getEyeLocation(), EntityType.ARROW);
+                a.setDamage(10);
+                a.setShooter(p);
+                a.setVelocity(v);
+                arrows.add(a);
+
+
+                ItemMeta meta = p.getInventory().getItemInMainHand().getItemMeta();
+                if(meta instanceof Damageable) {
+                    Damageable damageableMeta = (Damageable)meta;
+                    damageableMeta.setHealth(damageableMeta.getHealth() + 10);
+                    
+
+                }
+            }
+        }
+    }
+
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
         LOG.info("Projectile hit: " + event.getEventName());
         if (event.getEntity() instanceof Arrow) {
+            arrows.remove(event.getEntity());
             if (event.getEntity().getMetadata("lucasarrow").size() != 0)  {
                 event.getEntity().getWorld().createExplosion(event.getEntity(), 10,true);
             }
@@ -130,6 +177,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
 
                 MetadataValue metadataValue = new FixedMetadataValue(this , "lucasarrow");
                 arrow.setMetadata("lucasarrow", metadataValue);
+
 
             }
             if (label.equalsIgnoreCase("lucaslab:arrow")) {
