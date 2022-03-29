@@ -42,6 +42,54 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
         // Don't log disabling, Spigot does that for you automatically!
     }
 
+    
+     {
+        // Don't log enabling, Spigot does that for you automatically!
+        PluginManager pluginManager = getServer().getPluginManager();
+
+        //Do all setup in here
+        Bukkit.getPluginManager().registerEvents(this, this);
+        arrowTrace();
+    }
+     {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
+
+            @Override
+            public void run() {
+                for(Projectile arrow : arrows){
+                    Location loc = arrow.getLocation();
+                    arrow.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 0);
+                }
+            }
+
+        }, 0, 1);
+    }
+
+    
+     {
+         Bukkit e = null;
+         Player p= e .;
+        if (p.getInventory().getItemInMainHand().getType() == Material.NETHERITE_SWORD) {
+            if ((p.getPotionEffect() == Action.RIGHT_CLICK_AIR) || (p.() == Action.RIGHT_CLICK_BLOCK)) {
+                p.sendMessage("You right-clicked!");
+                Vector v = p.getLocation().getDirection().multiply(2D);
+                Arrow a = (Arrow) p.getWorld().spawnEntity(p.getEyeLocation(), EntityType.ARROW);
+                a.setDamage(10);
+                a.setShooter(p);
+                a.setVelocity(v);
+                arrows.add(a);
+
+
+                ItemMeta meta = p.getInventory().getItemInMainHand().getItemMeta();
+                if(meta instanceof Damageable) {
+                    Damageable damageableMeta = (Damageable)meta;
+                    damageableMeta.setHealth(damageableMeta.getHealth() + 10);
+
+
+                }
+            }
+        }
+    }
     @Override
     public void onEnable() {
         // Don't log enabling, Spigot does that for you automatically!
@@ -49,6 +97,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
 
         //Do all setup in here
         Bukkit.getPluginManager().registerEvents(this, this);
+        Object arrowTrace;
         arrowTrace();
     }
     public void arrowTrace() {
@@ -83,7 +132,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
                 if(meta instanceof Damageable) {
                     Damageable damageableMeta = (Damageable)meta;
                     damageableMeta.setHealth(damageableMeta.getHealth() + 10);
-                    
+
 
                 }
             }
