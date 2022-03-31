@@ -65,31 +65,6 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
         }, 0, 1);
     }
 
-    
-     {
-         Bukkit e = null;
-         Player p= e .;
-        if (p.getInventory().getItemInMainHand().getType() == Material.NETHERITE_SWORD) {
-            if ((p.getPotionEffect() == Action.RIGHT_CLICK_AIR) || (p.() == Action.RIGHT_CLICK_BLOCK)) {
-                p.sendMessage("You right-clicked!");
-                Vector v = p.getLocation().getDirection().multiply(2D);
-                Arrow a = (Arrow) p.getWorld().spawnEntity(p.getEyeLocation(), EntityType.ARROW);
-                a.setDamage(10);
-                a.setShooter(p);
-                a.setVelocity(v);
-                arrows.add(a);
-
-
-                ItemMeta meta = p.getInventory().getItemInMainHand().getItemMeta();
-                if(meta instanceof Damageable) {
-                    Damageable damageableMeta = (Damageable)meta;
-                    damageableMeta.setHealth(damageableMeta.getHealth() + 10);
-
-
-                }
-            }
-        }
-    }
     @Override
     public void onEnable() {
         // Don't log enabling, Spigot does that for you automatically!
@@ -117,6 +92,32 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void click(PlayerInteractEvent e) {
         Player p = e.getPlayer();
+
+        //This code is used to provide wind breathing if you hold a Trident and click
+        if (p.getInventory().getItemInMainHand().getType() == Material.TRIDENT) {
+            if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+                p.sendMessage("You right-clicked!");
+                Vector v = p.getLocation().getDirection().multiply(2D);
+                Arrow a = (Arrow) p.getWorld().spawnEntity(p.getEyeLocation(), EntityType.ARROW);
+
+                //Add your special wind breathing code here.
+                a.setDamage(10);
+                a.setShooter(p);
+                a.setVelocity(v);
+                arrows.add(a);
+
+
+                ItemMeta meta = p.getInventory().getItemInMainHand().getItemMeta();
+                if(meta instanceof Damageable) {
+                    Damageable damageableMeta = (Damageable)meta;
+                    damageableMeta.setHealth(damageableMeta.getHealth() + 10);
+
+
+                }
+            }
+        }
+
+        //This code is for another type of sword
         if (p.getInventory().getItemInMainHand().getType() == Material.NETHERITE_SWORD) {
             if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
                 p.sendMessage("You right-clicked!");
