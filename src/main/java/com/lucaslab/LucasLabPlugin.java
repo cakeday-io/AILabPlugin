@@ -82,7 +82,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
             public void run() {
                 for(Projectile arrow : arrows){
                     Location loc = arrow.getLocation();
-                    arrow.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 0);
+                    arrow.getWorld().playEffect(loc, Effect.SMOKE, 0);
                 }
             }
 
@@ -94,7 +94,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
         Player p = e.getPlayer();
 
         //This code is used to provide wind breathing if you hold a Trident and click
-        if (p.getInventory().getItemInMainHand().getType() == Material.TRIDENT) {
+        if (p.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD) {
             if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
                 p.sendMessage("You right-clicked!");
                 Vector v = p.getLocation().getDirection().multiply(2D);
