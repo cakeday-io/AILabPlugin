@@ -7,7 +7,6 @@ import com.ticxo.modelengine.api.model.ModeledEntity;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,15 +15,11 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.LazyMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 import java.util.ArrayList;
@@ -35,34 +30,12 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
 
     private int taskID = 0;
 
-    public static ArrayList<Projectile> arrows = new ArrayList<>();
-
+    public static ArrayList<Projectile> flameArrows = new ArrayList<>();
+    public static ArrayList<Projectile> windArrows = new ArrayList<>();
+    public static ArrayList<Projectile> boomArrows = new ArrayList<>();
     @Override
     public void onDisable() {
         // Don't log disabling, Spigot does that for you automatically!
-    }
-
-    
-     {
-        // Don't log enabling, Spigot does that for you automatically!
-        PluginManager pluginManager = getServer().getPluginManager();
-
-        //Do all setup in here
-        Bukkit.getPluginManager().registerEvents(this, this);
-        arrowTrace();
-    }
-     {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
-
-            @Override
-            public void run() {
-                for(Projectile arrow : arrows){
-                    Location loc = arrow.getLocation();
-                    arrow.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 0);
-                }
-            }
-
-        }, 0, 1);
     }
 
     @Override
@@ -75,15 +48,27 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
         Object arrowTrace;
         arrowTrace();
     }
+
     public void arrowTrace() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
 
             @Override
             public void run() {
-                for(Projectile arrow : arrows){
+                for(Projectile arrow : flameArrows){
+                    Location loc = arrow.getLocation();
+                    arrow.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 0);
+                }
+                for(Projectile arrow : windArrows){
                     Location loc = arrow.getLocation();
                     arrow.getWorld().playEffect(loc, Effect.SMOKE, 0);
                 }
+                for(Projectile arrow : boomArrows){
+                    Location loc = arrow.getLocation();
+                    TNTPrimed tnt = arrow.getWorld().spawn(loc, TNTPrimed.class);
+                    tnt.setFuseTicks(3 * 20);
+
+                }
+
             }
 
         }, 0, 1);
@@ -97,15 +82,15 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
         if (p.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD) {
             if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
                 p.sendMessage("You right-clicked!");
-                Vector v = p.getLocation().getDirection().multiply(2D);
+                Vector v = p.getLocation().getDirection().multiply(1D);
                 Arrow a = (Arrow) p.getWorld().spawnEntity(p.getEyeLocation(), EntityType.ARROW);
 
                 //Add your special wind breathing code here.
                 a.setDamage(10);
                 a.setShooter(p);
                 a.setVelocity(v);
-                arrows.add(a);
-
+                windArrows.add(a);
+                p.getWorld().playEffect(p.getLocation(), Effect.SMOKE, 0);
 
                 ItemMeta meta = p.getInventory().getItemInMainHand().getItemMeta();
                 if(meta instanceof Damageable) {
@@ -116,7 +101,27 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
                 }
             }
         }
+        if (p.getInventory().getItemInMainHand().getType() == Material.STICK) {
+            if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+                p.sendMessage("You right-clicked!");
+                Vector v = p.getLocation().getDirection().multiply(1D);
+                Arrow a = (Arrow) p.getWorld().spawnEntity(p.getEyeLocation(), EntityType.ARROW);
 
+                //Add your special wind breathing code here.
+                a.setDamage(10);
+                a.setShooter(p);
+                a.setVelocity(v);
+                boomArrows.add(a);
+
+                ItemMeta meta = p.getInventory().getItemInMainHand().getItemMeta();
+                if (meta instanceof Damageable) {
+                    Damageable damageableMeta = (Damageable) meta;
+                    damageableMeta.setHealth(damageableMeta.getHealth() + 10);
+
+
+                }
+            }
+        }
         //This code is for another type of sword
         if (p.getInventory().getItemInMainHand().getType() == Material.NETHERITE_SWORD) {
             if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
@@ -126,7 +131,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
                 a.setDamage(10);
                 a.setShooter(p);
                 a.setVelocity(v);
-                arrows.add(a);
+                flameArrows.add(a);
 
 
                 ItemMeta meta = p.getInventory().getItemInMainHand().getItemMeta();
@@ -144,7 +149,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
     public void onHit(ProjectileHitEvent event) {
         LOG.info("Projectile hit: " + event.getEventName());
         if (event.getEntity() instanceof Arrow) {
-            arrows.remove(event.getEntity());
+            flameArrows.remove(event.getEntity());
             if (event.getEntity().getMetadata("lucasarrow").size() != 0)  {
                 event.getEntity().getWorld().createExplosion(event.getEntity(), 10,true);
             }
