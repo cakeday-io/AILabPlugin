@@ -11,6 +11,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -73,7 +74,6 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
 
         }, 0, 1);
     }
-
     @EventHandler
     public void click(PlayerInteractEvent e) {
         Player p = e.getPlayer();
@@ -101,7 +101,12 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
                 }
             }
         }
-        if (p.getInventory().getItemInMainHand().getType() == Material.STICK) {
+        if (p.getInventory().getItemInMainHand().getType() == Material.NETHERITE_HOE) {
+            if ((e.getAction() == Action.LEFT_CLICK_AIR) || (e.getAction() == Action.LEFT_CLICK_BLOCK)) {
+                boomArrows.clear();
+            }
+        }
+        if (p.getInventory().getItemInMainHand().getType() == Material.NETHERITE_SWORD) {
             if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
                 p.sendMessage("You right-clicked!");
                 Vector v = p.getLocation().getDirection().multiply(1D);
@@ -123,7 +128,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
             }
         }
         //This code is for another type of sword
-        if (p.getInventory().getItemInMainHand().getType() == Material.NETHERITE_SWORD) {
+        if (p.getInventory().getItemInMainHand().getType() == Material.WOODEN_SWORD) {
             if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
                 p.sendMessage("You right-clicked!");
                 Vector v = p.getLocation().getDirection().multiply(2D);
@@ -150,6 +155,8 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
         LOG.info("Projectile hit: " + event.getEventName());
         if (event.getEntity() instanceof Arrow) {
             flameArrows.remove(event.getEntity());
+            boomArrows.remove(event.getEntity());
+            windArrows.remove(event.getEntity());
             if (event.getEntity().getMetadata("lucasarrow").size() != 0)  {
                 event.getEntity().getWorld().createExplosion(event.getEntity(), 10,true);
             }
