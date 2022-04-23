@@ -175,6 +175,7 @@ public class StuffMaker {
         }
     }
 
+
     public static void createTower(Location towerSpot, int totalFloors, int towerWidth, int towerHeight) {
         for(int i = 0; i < totalFloors; i++) {
             if(i == 0) {
@@ -184,7 +185,38 @@ public class StuffMaker {
             }
         }
     }
+    public static void createCherryBlossom(Location treeSpot, int totalBranches) {
 
+        World world = treeSpot.getWorld();
+        Block block = world.getBlockAt(treeSpot);
+        block.setType(Material.SPRUCE_WOOD  );
+        Random rand = new Random();
+        Location lastSpot = treeSpot.clone();
+        for(int i = 0; i < totalBranches; i++) {
+            lastSpot = createCherryBranch(lastSpot,3);
+
+
+            
+            int xpos = rand.nextInt(3);
+            int zpos = rand.nextInt(3);
+            int ypos = rand.nextInt(3);
+
+            lastSpot.setX(lastSpot.getX()+xpos-1);
+            lastSpot.setZ(lastSpot.getZ()+zpos-1);
+            lastSpot.setY(lastSpot.getY()+ypos-2);
+        }
+    }
+
+    public static Location createCherryBranch(Location branchSpot, int totalBlocks){
+        World world = branchSpot.getWorld();
+        Block block = world.getBlockAt(branchSpot);
+        block.setType(Material.SPRUCE_WOOD  );
+        for(int i = 0; i < totalBlocks; i++) {
+            branchSpot.setY(branchSpot.getY()+1);
+            world.getBlockAt(branchSpot).setType(Material.SPRUCE_WOOD  );
+        }
+        return branchSpot;
+    }
     public static void createSprayerCannon(Location cannonSpot, String direction) {
         World world = cannonSpot.getWorld();
         LOG.info("Building a cannon in the direction [" + direction +"]");

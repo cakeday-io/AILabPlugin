@@ -46,6 +46,7 @@ public class LucasLabPlugin extends JavaPlugin implements Listener {
 
         //Do all setup in here
         Bukkit.getPluginManager().registerEvents(this, this);
+        pluginManager.registerEvents(new BlockBreakListener(), this);
         Object arrowTrace;
         arrowTrace();
     }
