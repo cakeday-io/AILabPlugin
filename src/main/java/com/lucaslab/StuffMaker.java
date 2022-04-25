@@ -185,25 +185,44 @@ public class StuffMaker {
             }
         }
     }
-    public static void createCherryBlossom(Location treeSpot, int totalBranches) {
+    public static void createCherryBlossom(Location treeSpot, int totalBlocks) {
 
         World world = treeSpot.getWorld();
         Block block = world.getBlockAt(treeSpot);
         block.setType(Material.SPRUCE_WOOD  );
         Random rand = new Random();
         Location lastSpot = treeSpot.clone();
-        for(int i = 0; i < totalBranches; i++) {
-            lastSpot = createCherryBranch(lastSpot,3);
+        for(int i = 0; i < totalBlocks; i++) {
+            Block myBlock;
+            myBlock = world.getBlockAt(lastSpot);
 
-
-            
             int xpos = rand.nextInt(3);
-            int zpos = rand.nextInt(3);
-            int ypos = rand.nextInt(3);
-
             lastSpot.setX(lastSpot.getX()+xpos-1);
-            lastSpot.setZ(lastSpot.getZ()+zpos-1);
-            lastSpot.setY(lastSpot.getY()+ypos-2);
+
+            int ypos = rand.nextInt(2);
+            lastSpot.setY(lastSpot.getY()+ypos);
+
+            myBlock = world.getBlockAt(lastSpot);
+
+            if (myBlock.getType().isAir()) {
+                world.getBlockAt(lastSpot).setType(Material.SPRUCE_WOOD  );
+            } else {
+                i--;
+            }
+
+
+
+          //  lastSpot = createCherryBranch(lastSpot,3);
+
+            //Example of random number generators
+//            int xpos = rand.nextInt(3);
+//            int zpos = rand.nextInt(3);
+//            int ypos = rand.nextInt(3);
+//
+            //Example of moving to another space
+//            lastSpot.setX(lastSpot.getX()+xpos-1);
+//            lastSpot.setZ(lastSpot.getZ()+zpos-1);
+//            lastSpot.setY(lastSpot.getY()+ypos-2);
         }
     }
 
