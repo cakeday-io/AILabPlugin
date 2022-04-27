@@ -198,11 +198,13 @@ public class StuffMaker {
                 Block myBlock;
                 myBlock = world.getBlockAt(lastSpot);
 
-                int xpos = rand.nextInt(3);
-                lastSpot.setX(lastSpot.getX()+xpos-1);
+//                int xpos = rand.nextInt(3);
+//                lastSpot.setX(lastSpot.getX()+xpos-1);
+//
+//                int ypos = rand.nextInt(2);
+//                lastSpot.setY(lastSpot.getY()+ypos);
 
-                int ypos = rand.nextInt(2);
-                lastSpot.setY(lastSpot.getY()+ypos);
+                lastSpot.setY(lastSpot.getY()+1);
 
                 myBlock = world.getBlockAt(lastSpot);
 
@@ -213,11 +215,19 @@ public class StuffMaker {
                 }
                 int randomBranch = rand.nextInt(7);
                 if (randomBranch == 2) {
-                    createCherryBranch(lastSpot.clone(),6,true);
+                    createCherryBranch(lastSpot.clone(),6,true,true);
+
+                }
+                if (randomBranch == 5) {
+                    createCherryBranch(lastSpot.clone(),6,true,false);
 
                 }
                 if (randomBranch == 0) {
-                    createCherryBranch(lastSpot.clone(),6,false);
+                    createCherryBranch(lastSpot.clone(),6,false,true);
+
+                }
+                if (randomBranch == 3) {
+                    createCherryBranch(lastSpot.clone(),6,false,false);
 
                 }
 
@@ -239,20 +249,34 @@ public class StuffMaker {
         }
     }
 
-    public static Location createCherryBranch(Location branchSpot, int totalBlocks,boolean posneg){
+    public static Location createCherryBranch(Location branchSpot, int totalBlocks,boolean posneg,boolean xaxis ){
         World world = branchSpot.getWorld();
         Block block = world.getBlockAt(branchSpot);
         block.setType(Material.SPRUCE_WOOD  );
         for(int i = 0; i < totalBlocks; i++) {
             if (posneg) {
-                branchSpot.setX(branchSpot.getX()+1);
+                if (xaxis) {
+                    branchSpot.setX(branchSpot.getX()+1);
+                }else {
+                    branchSpot.setZ(branchSpot.getZ()+1);
+                }
+
 
             }else {
-                branchSpot.setX(branchSpot.getX()-1);
+                if (xaxis) {
+                    branchSpot.setX(branchSpot.getX()-1);
+                }else {
+                    branchSpot.setZ(branchSpot.getZ()-1);
+                }
+            }
+            if (i == (totalBlocks -1)) {
+                world.getBlockAt(branchSpot).setType(Material.PINK_STAINED_GLASS  );
+            }else {
+                world.getBlockAt(branchSpot).setType(Material.SPRUCE_WOOD  );
             }
 
-            world.getBlockAt(branchSpot).setType(Material.SPRUCE_WOOD  );
         }
+
         return branchSpot;
     }
     public static void createSprayerCannon(Location cannonSpot, String direction) {
