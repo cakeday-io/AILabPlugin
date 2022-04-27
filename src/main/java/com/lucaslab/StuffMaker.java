@@ -215,19 +215,19 @@ public class StuffMaker {
                 }
                 int randomBranch = rand.nextInt(7);
                 if (randomBranch == 2) {
-                    createCherryBranch(lastSpot.clone(),6,true,true);
+                    createCherryBranchSquiggle(lastSpot.clone(),6,true,true);
 
                 }
                 if (randomBranch == 5) {
-                    createCherryBranch(lastSpot.clone(),6,true,false);
+                    createCherryBranchSquiggle(lastSpot.clone(),6,true,false);
 
                 }
                 if (randomBranch == 0) {
-                    createCherryBranch(lastSpot.clone(),6,false,true);
+                    createCherryBranchSquiggle(lastSpot.clone(),6,false,true);
 
                 }
                 if (randomBranch == 3) {
-                    createCherryBranch(lastSpot.clone(),6,false,false);
+                    createCherryBranchSquiggle(lastSpot.clone(),6,false,false);
 
                 }
 
@@ -249,6 +249,47 @@ public class StuffMaker {
         }
     }
 
+    public static Location createCherryBranchSquiggle(Location branchSpot, int totalBlocks,boolean posneg,boolean xaxis ){
+        World world = branchSpot.getWorld();
+        Block block = world.getBlockAt(branchSpot);
+        block.setType(Material.SPRUCE_WOOD  );
+        Random rand = new Random();
+        for(int i = 0; i < totalBlocks; i++) {
+            int dice = rand.nextInt(6);
+            if(dice == 1){
+                branchSpot.setY(branchSpot.getY()+1);
+            }
+            if(dice == 2||dice==3){
+                xaxis = true;
+            } else {
+                xaxis = false;
+            }
+
+            if (posneg) {
+                if (xaxis) {
+                    branchSpot.setX(branchSpot.getX()+1);
+                }else {
+                    branchSpot.setZ(branchSpot.getZ()+1);
+                }
+
+            }else {
+                if (xaxis) {
+                    branchSpot.setX(branchSpot.getX()-1);
+                }else {
+                    branchSpot.setZ(branchSpot.getZ()-1);
+                }
+            }
+            if (i == (totalBlocks -1)) {
+                world.getBlockAt(branchSpot).setType(Material.PINK_STAINED_GLASS  );
+            }else {
+                world.getBlockAt(branchSpot).setType(Material.SPRUCE_WOOD  );
+            }
+
+        }
+
+        return branchSpot;
+    }
+
     public static Location createCherryBranch(Location branchSpot, int totalBlocks,boolean posneg,boolean xaxis ){
         World world = branchSpot.getWorld();
         Block block = world.getBlockAt(branchSpot);
@@ -260,6 +301,7 @@ public class StuffMaker {
                 }else {
                     branchSpot.setZ(branchSpot.getZ()+1);
                 }
+
 
 
             }else {
