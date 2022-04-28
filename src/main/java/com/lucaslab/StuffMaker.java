@@ -280,7 +280,7 @@ public class StuffMaker {
                 }
             }
             if (i == (totalBlocks -1)) {
-                world.getBlockAt(branchSpot).setType(Material.PINK_STAINED_GLASS  );
+                createCherryLeaves(branchSpot);
             }else {
                 world.getBlockAt(branchSpot).setType(Material.SPRUCE_WOOD  );
             }
@@ -289,7 +289,33 @@ public class StuffMaker {
 
         return branchSpot;
     }
-
+    public static void createCherryLeaves(Location leaveSpot) {
+        //3 nested for loops (x,y,z)
+        //random number to make it look more natural
+        //Check that there isn't wood there already with an if statement
+        World world = leaveSpot.getWorld();
+        Location tempLoc = leaveSpot.clone();
+        tempLoc.setX(tempLoc.getX()-1);
+        tempLoc.setY(tempLoc.getY()-1);
+        tempLoc.setZ(tempLoc.getZ()-1);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    //put code her
+                    Block myBlock =world.getBlockAt(tempLoc);
+                    if (myBlock.getType().isAir()) {
+                        world.getBlockAt(tempLoc).setType(Material.PINK_STAINED_GLASS  );
+                    }
+                    
+                    tempLoc.setZ(tempLoc.getZ()+1);
+                }
+                tempLoc.setZ(tempLoc.getZ()-3);
+                tempLoc.setY(tempLoc.getY()+1);
+            }
+            tempLoc.setY(tempLoc.getY()-3);
+            tempLoc.setX(tempLoc.getX()+1);
+        }
+    }
     public static Location createCherryBranch(Location branchSpot, int totalBlocks,boolean posneg,boolean xaxis ){
         World world = branchSpot.getWorld();
         Block block = world.getBlockAt(branchSpot);
