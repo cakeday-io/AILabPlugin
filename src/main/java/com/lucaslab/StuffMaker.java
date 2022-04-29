@@ -213,21 +213,22 @@ public class StuffMaker {
                 } else {
                     i--;
                 }
-                int randomBranch = rand.nextInt(7);
+                int branchLenght = 1;
+                int randomBranch = rand.nextInt(5);
                 if (randomBranch == 2) {
-                    createCherryBranchSquiggle(lastSpot.clone(),6,true,true);
+                    createCherryBranchSquiggle(lastSpot.clone(),branchLenght,true,true);
 
                 }
                 if (randomBranch == 5) {
-                    createCherryBranchSquiggle(lastSpot.clone(),6,true,false);
+                    createCherryBranchSquiggle(lastSpot.clone(),branchLenght,true,false);
 
                 }
                 if (randomBranch == 0) {
-                    createCherryBranchSquiggle(lastSpot.clone(),6,false,true);
+                    createCherryBranchSquiggle(lastSpot.clone(),branchLenght,false,true);
 
                 }
                 if (randomBranch == 3) {
-                    createCherryBranchSquiggle(lastSpot.clone(),6,false,false);
+                    createCherryBranchSquiggle(lastSpot.clone(),branchLenght,false,false);
 
                 }
 
@@ -295,24 +296,29 @@ public class StuffMaker {
         //Check that there isn't wood there already with an if statement
         World world = leaveSpot.getWorld();
         Location tempLoc = leaveSpot.clone();
-        tempLoc.setX(tempLoc.getX()-1);
-        tempLoc.setY(tempLoc.getY()-1);
-        tempLoc.setZ(tempLoc.getZ()-1);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    //put code her
+        Random rand = new Random();
+        int cherrysize = 9;
+
+        tempLoc.setX(tempLoc.getX()-cherrysize / 2);
+        tempLoc.setY(tempLoc.getY()-cherrysize / 2);
+        tempLoc.setZ(tempLoc.getZ()-cherrysize / 2);
+        for (int i = 0; i < cherrysize; i++) {
+            for (int j = 0; j < cherrysize; j++) {
+                for (int k = 0; k < cherrysize; k++) {
+                    //put code here
                     Block myBlock =world.getBlockAt(tempLoc);
                     if (myBlock.getType().isAir()) {
-                        world.getBlockAt(tempLoc).setType(Material.PINK_STAINED_GLASS  );
+                        int dice = rand.nextInt(6);
+                        if(dice == 2||dice==3){
+                            world.getBlockAt(tempLoc).setType(Material.PINK_STAINED_GLASS  );
+                        }
                     }
-                    
                     tempLoc.setZ(tempLoc.getZ()+1);
                 }
-                tempLoc.setZ(tempLoc.getZ()-3);
+                tempLoc.setZ(tempLoc.getZ()-cherrysize);
                 tempLoc.setY(tempLoc.getY()+1);
             }
-            tempLoc.setY(tempLoc.getY()-3);
+            tempLoc.setY(tempLoc.getY()-cherrysize);
             tempLoc.setX(tempLoc.getX()+1);
         }
     }

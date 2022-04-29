@@ -15,7 +15,7 @@ public class BlockBreakListener implements Listener {
     public void damage(BlockBreakEvent event) {
         LOG.info("Breaking Block of type [" +  event.getBlock().getType() + "] BlockData [" + event.getBlock().getBlockData().getAsString() +"]");
         if(event.getBlock().getType() == Material.PINK_TERRACOTTA) {
-            StuffMaker.createCherryBlossom(event.getBlock().getLocation(), 10);
+            StuffMaker.createCherryBlossom(event.getBlock().getLocation(), 319);
         }
 
 
