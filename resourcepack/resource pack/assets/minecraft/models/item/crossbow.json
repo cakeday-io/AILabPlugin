@@ -61,7 +61,7 @@
         },
         {
             "predicate": {
-                "custom_model_data": 1
+                "custom_model_data": 101010
             },
             "model": "custom/explodingcrossbow"
         },
@@ -70,7 +70,7 @@
 
               "pulling": 1,
               "pull": 0.58,
-                "custom_model_data": 1
+                "custom_model_data": 101010
             },
             "model": "custom/explodingcrossbow"
         },
@@ -78,7 +78,7 @@
             "predicate": {
                 "pulling": 1,
                 "pull": 1.0,
-                "custom_model_data": 1
+                "custom_model_data": 101010
             },
             "model": "custom/explodingcrossbow"
         }
